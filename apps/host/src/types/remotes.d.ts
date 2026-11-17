@@ -1,13 +1,13 @@
 /**
- * Declaração TypeScript para o módulo remoto.
+ * Declara o módulo remoto para o TypeScript.
  *
- * Permite importar o componente exposto pelo
- * Module Federation sem erros de tipagem.
+ * A implementação real é carregada dinamicamente
+ * pelo Module Federation em tempo de execução.
  */
-declare module "remote_users/UsersPage" {
+declare module "remote_users/UsersRoutes" {
   import type { ComponentType } from "react";
 
-  const UsersPage: ComponentType;
+  const UsersRoutes: ComponentType;
 
-  export default UsersPage;
+  export default UsersRoutes;
 }

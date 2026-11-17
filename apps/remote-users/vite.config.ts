@@ -17,9 +17,14 @@ export default defineConfig({
 
       filename: "remoteEntry.js",
 
-      // Componentes disponibilizados para o Host.
+      /**
+       * O Remote expõe seu componente de roteamento.
+       *
+       * O Host conhece apenas o ponto de entrada,
+       * mantendo as páginas internas desacopladas.
+       */
       exposes: {
-        "./UsersPage": "./src/pages/UsersPage.tsx",
+        "./UsersRoutes": "./src/UsersRoutes.tsx",
       },
 
       /**
@@ -31,14 +36,18 @@ export default defineConfig({
        */
       dts: false,
 
-      // Compartilhamento das dependências React.
+      /**
+       * O Remote compartilha as dependências de roteamento
+       * com o Host quando executado de forma integrada.
+       *
+       * Quando executado isoladamente, utiliza as dependências
+       * disponibilizadas pela própria aplicação.
+       */
       shared: {
-        react: {
-          singleton: true,
-        },
-        "react-dom": {
-          singleton: true,
-        },
+        react: { singleton: true },
+        "react-dom": { singleton: true },
+        "react-router": { singleton: true },
+        "react-router-dom": { singleton: true },
       },
     }),
   ],

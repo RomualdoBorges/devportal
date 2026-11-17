@@ -29,14 +29,18 @@ export default defineConfig({
         },
       },
 
-      // Compartilha a mesma instância de React.
+      /**
+       * Compartilhamos as dependências essenciais para que
+       * Host e Remote utilizem as mesmas instâncias.
+       *
+       * Isso evita contextos React e React Router duplicados
+       * durante a composição dos microfrontends.
+       */
       shared: {
-        react: {
-          singleton: true,
-        },
-        "react-dom": {
-          singleton: true,
-        },
+        react: { singleton: true },
+        "react-dom": { singleton: true },
+        "react-router": { singleton: true },
+        "react-router-dom": { singleton: true },
       },
 
       // Tipos federados serão declarados manualmente.

@@ -1,25 +1,28 @@
+import { Link } from "react-router-dom";
+import { mockUsers } from "../mocks/users";
+
 /**
- * Página de Usuários exposta pelo Module Federation.
+ * Página de listagem pertencente ao Remote Users.
  *
- * Este componente pertence ao Remote de Usuários
- * e poderá ser carregado pelo Host dinamicamente.
+ * A navegação utiliza caminhos relativos ao módulo,
+ * permitindo que o Host mantenha a responsabilidade
+ * pela rota principal /usuarios.
  */
 export default function UsersPage() {
-  const users = [
-    { id: 1, name: "Ana Silva", email: "ana@devportal.com" },
-    { id: 2, name: "Carlos Souza", email: "carlos@devportal.com" },
-    { id: 3, name: "Mariana Costa", email: "mariana@devportal.com" },
-  ];
-
   return (
     <section>
-      <h1>Gerenciamento de Usuários</h1>
-      <p>Microfrontend de Usuários carregado com Module Federation.</p>
+      <h2>Gerenciamento de Usuários</h2>
+
+      <p>Consulte os usuários cadastrados no portal.</p>
+
+      <Link to="novo">Cadastrar usuário</Link>
 
       <ul>
-        {users.map((user) => (
+        {mockUsers.map((user) => (
           <li key={user.id}>
-            {user.name} — {user.email}
+            <Link to={String(user.id)}>{user.name}</Link>
+            {" — "}
+            {user.email}
           </li>
         ))}
       </ul>
