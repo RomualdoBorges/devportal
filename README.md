@@ -20,7 +20,8 @@ O projeto utiliza dados simulados (mocks), sem necessidade de integração com u
 - Organizar o código em um monorepo.
 - Implementar navegação entre módulos com React Router.
 - Aplicar hooks avançados e estratégias de gerenciamento de estado.
-- Adicionar testes automatizados e práticas de integração contínua.
+- Validar o Remote Users com testes automatizados já implementados.
+- Avaliar práticas de CI/CD como melhoria opcional futura.
 - Documentar as decisões técnicas e a execução do projeto.
 
 ## Tecnologias
@@ -32,6 +33,9 @@ O projeto utiliza dados simulados (mocks), sem necessidade de integração com u
 | Vite 8            | Desenvolvimento e build                        |
 | Module Federation | Integração entre microfrontends                |
 | React Router 7    | Navegação do Host e rotas internas dos Remotes |
+| Vitest            | Execução dos testes automatizados              |
+| React Testing Library | Testes de comportamento dos componentes    |
+| jsdom             | Ambiente simulado de navegador para os testes |
 | npm Workspaces    | Gerenciamento do monorepo                      |
 | Git e GitHub      | Versionamento                                  |
 
@@ -74,6 +78,7 @@ Microfrontend responsável pelo gerenciamento de usuários.
 Atualmente, disponibiliza:
 
 - Listagem de usuários com dados simulados.
+- Busca de usuários por nome ou e-mail.
 - Formulário de cadastro simulado.
 - Visualização dos detalhes de um usuário.
 - Tratamento de usuários não encontrados.
@@ -107,6 +112,52 @@ As dependências React, React DOM, React Router e React Router DOM são comparti
 
 Essa configuração permite reutilizar o contexto de navegação do Host e evita a criação desnecessária de múltiplas instâncias dessas bibliotecas durante a integração.
 
+## Decisões técnicas e benefícios da arquitetura
+
+### Separação entre Host e Remote
+
+O DevPortal utiliza uma arquitetura de microfrontends para separar a aplicação principal dos módulos funcionais.
+
+O Host concentra a navegação principal e a integração dos módulos, enquanto o Remote Users mantém suas próprias páginas, rotas e regras de gerenciamento de usuários.
+
+Essa separação reduz o acoplamento entre as funcionalidades e permite que diferentes equipes desenvolvam e mantenham módulos de forma independente.
+
+### Module Federation
+
+O Module Federation foi escolhido para permitir que o Host consuma componentes de aplicações independentes em tempo de execução.
+
+O Remote Users disponibiliza o componente `UsersRoutes`, permitindo que o Host integre suas funcionalidades sem incorporar diretamente o código-fonte do módulo.
+
+Entre os benefícios estão a modularidade, a possibilidade de evolução independente e a reutilização de funcionalidades entre aplicações.
+
+### Carregamento sob demanda
+
+A integração utiliza `React.lazy` e `Suspense` para carregar o Remote Users quando necessário.
+
+Essa estratégia evita o carregamento antecipado de todas as funcionalidades do portal e permite apresentar uma interface de espera durante a importação do módulo remoto.
+
+### Gerenciamento de estado
+
+A Context API e o `useReducer` foram escolhidos para centralizar o estado dos usuários sem adicionar uma biblioteca externa de gerenciamento global.
+
+Os hooks `useMemo` e `useCallback` são utilizados para memorizar, respectivamente, o resultado da filtragem e a função de cadastro.
+
+Essa abordagem mantém a implementação simples e adequada ao escopo acadêmico do projeto.
+
+### Monorepo com npm Workspaces
+
+O monorepo facilita a organização das aplicações em um único repositório, preservando scripts e configurações independentes para cada workspace.
+
+Essa estrutura também permite evoluir futuramente o pacote `packages/ui` para compartilhar componentes visuais.
+
+### Limitações da implementação
+
+O projeto utiliza dados simulados armazenados em memória, sem backend ou persistência.
+
+Embora a arquitetura permita builds independentes e carregamento remoto, a publicação independente em ambientes de produção não foi implementada nesta etapa.
+
+Os testes automatizados validam os principais comportamentos do Remote Users, mas ainda não incluem testes E2E entre Host e Remote.
+
 ## Estrutura do projeto
 
 ```text
@@ -123,15 +174,20 @@ devportal/
 │   └── remote-users/
 │       ├── src/
 │       │   ├── contexts/
-│       │   │   └── UsersContext.tsx
+│       │   │   ├── UsersContext.tsx
+│       │   │   └── UsersContext.test.tsx
 │       │   ├── mocks/
 │       │   │   └── users.ts
 │       │   ├── pages/
 │       │   │   ├── UsersPage.tsx
+│       │   │   ├── UsersPage.test.tsx
 │       │   │   ├── NewUserPage.tsx
-│       │   │   └── UserDetailsPage.tsx
+│       │   │   ├── NewUserPage.test.tsx
+│       │   │   ├── UserDetailsPage.tsx
+│       │   │   └── UserDetailsPage.test.tsx
 │       │   ├── reducers/
-│       │   │   └── usersReducer.ts
+│       │   │   ├── usersReducer.ts
+│       │   │   └── usersReducer.test.ts
 │       │   ├── UsersRoutes.tsx
 │       │   ├── App.tsx
 │       │   └── main.tsx
@@ -376,6 +432,41 @@ npm run build -w apps/remote-users
 
 Os builds utilizam TypeScript para verificação de tipos e Vite para gerar os arquivos de produção.
 
+## Testes automatizados
+
+O DevPortal utiliza **Vitest** e **React Testing Library** para validar o comportamento do microfrontend Remote Users.
+
+Os testes são executados em um ambiente simulado com **jsdom**, sem necessidade de iniciar o Host, o Remote ou um backend.
+
+### Executar os testes
+
+Na raiz do projeto:
+
+```bash
+npm run test -w apps/remote-users
+```
+
+Para executar os testes automaticamente durante o desenvolvimento:
+
+```bash
+npm run test:watch -w apps/remote-users
+```
+
+### Cenários testados
+
+| Módulo          | Testes | Funcionalidades                                                        |
+| --------------- | ------ | ---------------------------------------------------------------------- |
+| usersReducer    | 4      | Cadastro, preservação de usuários, imutabilidade e ações desconhecidas |
+| UsersContext    | 2      | Estado inicial e atualização do estado compartilhado                   |
+| UsersPage       | 4      | Listagem, busca por nome, busca por e-mail e limpeza da busca          |
+| NewUserPage     | 3      | Formulário, cadastro e navegação                                       |
+| UserDetailsPage | 3      | Detalhes, usuário inexistente e retorno à listagem                     |
+| **Total**       | **16** | **Todos aprovados na última execução**                                 |
+
+Os testes verificam o comportamento dos componentes e suas interações com o estado compartilhado e o React Router.
+
+A aplicação utiliza dados simulados em memória, sem integração com um backend real.
+
 ## Estado atual
 
 - [x] Monorepo configurado.
@@ -391,10 +482,14 @@ Os builds utilizam TypeScript para verificação de tipos e Vite para gerar os a
 - [x] Compartilhamento de dependências entre Host e Remote.
 - [x] Cadastro simulado e detalhes de usuários.
 - [x] Hooks avançados e gerenciamento de estado.
-- [ ] Testes automatizados.
+- [x] Testes automatizados (Vitest + React Testing Library).
+- [ ] Documentação final e vídeo de demonstração.
+
+### Melhorias opcionais futuras
+
+- [ ] Testes E2E com Playwright.
 - [ ] Docker.
 - [ ] CI/CD.
-- [ ] Documentação final e vídeo de demonstração.
 
 ## Desenvolvimento
 
