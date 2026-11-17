@@ -1,5 +1,7 @@
-import { useState, type FormEvent } from "react";
+import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router-dom";
+import { useUsers } from "../contexts/UsersContext";
+import { useNavigate } from "react-router-dom";
 
 /**
  * Formulário de cadastro simulado.
@@ -13,13 +15,28 @@ import { Link } from "react-router-dom";
 export default function NewUserPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [submitted, setSubmitted] = useState(false);
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
+  // Acessa a função de cadastro do estado compartilhado.
+  const { users, addUser } = useUsers();
+
+  // Permite navegar programaticamente após o cadastro.
+  const navigate = useNavigate();
+
+  function handleSubmit(event: SubmitEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    // Simula o envio sem persistir os dados.
-    setSubmitted(true);
+    // Gera o próximo ID disponível.
+    const nextId = Math.max(0, ...users.map((user) => user.id)) + 1;
+
+    // Adiciona o usuário ao estado compartilhado.
+    addUser({
+      id: nextId,
+      name: name.trim(),
+      email: email.trim(),
+    });
+
+    // Retorna à listagem.
+    navigate("..", { relative: "path" });
   }
 
   return (
@@ -51,12 +68,6 @@ export default function NewUserPage() {
 
         <button type="submit">Cadastrar</button>
       </form>
-
-      {submitted && (
-        <p role="status">
-          Cadastro simulado realizado! Os dados ainda não são persistidos.
-        </p>
-      )}
 
       <p>
         <Link to=".." relative="path">
