@@ -1,0 +1,22 @@
+node_modules/
+dist/
+coverage/
+playwright-report/
+test-results/
+.env
+.env.local
+*.log
+.DS_Store
+
+# Arquivos gerados pelo Module Federation
+**/@mf-types/
+**/.federation/
+
+# Outros arquivos de build
+build/
+
+# Variáveis de ambiente locais
+.env.*.local
+
+# Diagnósticos gerados pelo Module Federation
+**/.mf/
