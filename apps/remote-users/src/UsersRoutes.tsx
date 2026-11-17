@@ -1,5 +1,6 @@
 import { Route, Routes } from "react-router-dom";
 
+import { UsersProvider } from "./contexts/UsersContext";
 import UsersPage from "./pages/UsersPage";
 import NewUserPage from "./pages/NewUserPage";
 import UserDetailsPage from "./pages/UserDetailsPage";
@@ -15,10 +16,14 @@ import UserDetailsPage from "./pages/UserDetailsPage";
  */
 export default function UsersRoutes() {
   return (
-    <Routes>
-      <Route index element={<UsersPage />} />
-      <Route path="novo" element={<NewUserPage />} />
-      <Route path=":id" element={<UserDetailsPage />} />
-    </Routes>
+    // O Provider envolve todas as rotas do Remote Users.
+    // Assim, as páginas compartilham o mesmo estado.
+    <UsersProvider>
+      <Routes>
+        <Route index element={<UsersPage />} />
+        <Route path="novo" element={<NewUserPage />} />
+        <Route path=":id" element={<UserDetailsPage />} />
+      </Routes>
+    </UsersProvider>
   );
 }

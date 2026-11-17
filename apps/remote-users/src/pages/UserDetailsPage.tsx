@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { mockUsers } from "../mocks/users";
+import { useUsers } from "../contexts/UsersContext";
 
 /**
  * Página de detalhes de um usuário.
@@ -13,7 +13,12 @@ import { mockUsers } from "../mocks/users";
 export default function UserDetailsPage() {
   const { id } = useParams<{ id: string }>();
 
-  const user = mockUsers.find((item) => item.id === Number(id));
+  // Obtém a lista atualizada do estado compartilhado.
+  const { users } = useUsers();
+
+  // Busca o usuário na lista compartilhada,
+  // incluindo os cadastrados durante a sessão.
+  const user = users.find((user) => user.id === Number(id));
 
   if (!user) {
     return (

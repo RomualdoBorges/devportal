@@ -122,12 +122,16 @@ devportal/
 │   │
 │   └── remote-users/
 │       ├── src/
+│       │   ├── contexts/
+│       │   │   └── UsersContext.tsx
 │       │   ├── mocks/
 │       │   │   └── users.ts
 │       │   ├── pages/
 │       │   │   ├── UsersPage.tsx
 │       │   │   ├── NewUserPage.tsx
 │       │   │   └── UserDetailsPage.tsx
+│       │   ├── reducers/
+│       │   │   └── usersReducer.ts
 │       │   ├── UsersRoutes.tsx
 │       │   ├── App.tsx
 │       │   └── main.tsx
@@ -210,13 +214,64 @@ Atualmente, existem três usuários para demonstração:
 
 O formulário de cadastro utiliza estado local com `useState`, inputs controlados e validação HTML.
 
-O envio é apenas simulado:
+O envio adiciona o novo usuário ao estado compartilhado em memória:
 
 - Nenhuma requisição HTTP é realizada.
-- Os dados não são persistidos.
-- A listagem permanece baseada nos dados simulados.
+- A listagem é atualizada com os usuários cadastrados.
+- Os dados não são persistidos e são perdidos ao atualizar a página ou desmontar o microfrontend.
 
-O gerenciamento de estado compartilhado será implementado em uma etapa posterior.
+## Gerenciamento de estado
+
+O Remote Users utiliza a Context API e hooks do React 19
+para compartilhar e atualizar os dados dos usuários.
+
+### useReducer
+
+O `usersReducer` centraliza as alterações na lista de usuários.
+
+Atualmente, implementa a ação `ADD_USER`, responsável por
+adicionar um novo usuário sem modificar o estado anterior.
+
+### useContext
+
+O `UsersContext` disponibiliza o estado compartilhado
+para as páginas do Remote Users.
+
+O hook personalizado `useUsers()` permite acessar:
+
+- `users`: lista atualizada de usuários.
+- `addUser`: função para cadastrar um usuário.
+
+O `UsersProvider` envolve as rotas do microfrontend,
+funcionando tanto na execução independente quanto
+na integração com o Host.
+
+### useMemo
+
+A página `UsersPage` utiliza `useMemo` para memorizar
+o resultado da filtragem de usuários.
+
+A busca permite localizar usuários pelo nome ou e-mail,
+sem diferenciar letras maiúsculas e minúsculas.
+
+A lista filtrada é recalculada quando os usuários
+ou o texto pesquisado são alterados.
+
+### useCallback
+
+O `UsersProvider` utiliza `useCallback` para manter
+estável a referência da função `addUser` entre
+renderizações.
+
+### Persistência dos dados
+
+O gerenciamento de estado ocorre exclusivamente em memória.
+
+Os usuários cadastrados permanecem disponíveis durante
+a navegação pelo módulo, mas são perdidos ao atualizar
+a página ou desmontar o microfrontend.
+
+Não há integração com backend ou armazenamento persistente.
 
 ## Pré-requisitos
 
@@ -335,7 +390,7 @@ Os builds utilizam TypeScript para verificação de tipos e Vite para gerar os a
 - [x] Execução independente do Remote Users.
 - [x] Compartilhamento de dependências entre Host e Remote.
 - [x] Cadastro simulado e detalhes de usuários.
-- [ ] Hooks avançados e gerenciamento de estado.
+- [x] Hooks avançados e gerenciamento de estado.
 - [ ] Testes automatizados.
 - [ ] Docker.
 - [ ] CI/CD.
