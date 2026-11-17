@@ -1,4 +1,4 @@
-import { defineConfig } from "vite";
+import { defineConfig } from "vitest/config";
 import react from "@vitejs/plugin-react";
 import { federation } from "@module-federation/vite";
 
@@ -9,6 +9,14 @@ import { federation } from "@module-federation/vite";
  * consumidos por outras aplicações de forma independente.
  */
 export default defineConfig({
+  test: {
+    // Simula o DOM do navegador para testar componentes React.
+    environment: "jsdom",
+
+    // Disponibiliza as funções do Vitest por importação.
+    globals: false,
+  },
+
   plugins: [
     react(),
 
