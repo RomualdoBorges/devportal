@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
-import { Link, Route, Routes } from "react-router-dom";
+import { Badge, Button, Card } from "@devportal/ui";
+import { Link, Route, Routes, useNavigate } from "react-router-dom";
 
 /**
  * Carrega dinamicamente o conjunto de rotas
@@ -9,12 +10,29 @@ const UsersRoutes = lazy(() => import("remote_users/UsersRoutes"));
 
 /**
  * Página inicial pertencente ao Host.
+ *
+ * Demonstra a reutilização dos componentes
+ * compartilhados entre microfrontends.
  */
 function HomePage() {
+  const navigate = useNavigate();
+
   return (
     <section>
-      <h2>Bem-vindo ao DevPortal</h2>
-      <p>Plataforma corporativa construída com microfrontends.</p>
+      <Card
+        title="Bem-vindo ao DevPortal"
+        description="Plataforma corporativa construída com microfrontends.">
+        <div style={{ marginBottom: "16px" }}>
+          <Badge variant="success">Portal disponível</Badge>
+        </div>
+
+        <Button
+          variant="primary"
+          size="md"
+          onClick={() => navigate("/usuarios")}>
+          Acessar usuários
+        </Button>
+      </Card>
     </section>
   );
 }

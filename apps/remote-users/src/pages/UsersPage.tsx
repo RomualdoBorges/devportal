@@ -1,24 +1,23 @@
-import { Link } from "react-router-dom";
-import { useUsers } from "../contexts/UsersContext";
 import { useMemo, useState } from "react";
+import { Link } from "react-router-dom";
+import { Input, Table, type TableColumn } from "@devportal/ui";
+import { useUsers } from "../contexts/UsersContext";
 
 /**
- * Página de listagem pertencente ao Remote Users.
+ * Página de gerenciamento de usuários.
  *
- * A navegação utiliza caminhos relativos ao módulo,
- * permitindo que o Host mantenha a responsabilidade
- * pela rota principal /usuarios.
+ * Utiliza componentes compartilhados da biblioteca
+ * @devportal/ui, mantendo as regras de negócio
+ * dentro do microfrontend Remote Users.
  */
 export default function UsersPage() {
-  // Obtém a lista de usuários do estado compartilhado.
-  // O contexto é gerenciado pelo UsersProvider.
   const { users } = useUsers();
 
-  // Armazena o texto digitado no campo de busca.
+  // Estado local do campo de busca.
   const [search, setSearch] = useState("");
 
-  // Memoriza a lista filtrada.
-  // O cálculo é refeito apenas quando users ou search mudarem.
+  // Filtra usuários somente quando os dados
+  // ou o termo pesquisado forem alterados.
   const filteredUsers = useMemo(() => {
     const term = search.trim().toLowerCase();
 
@@ -33,19 +32,40 @@ export default function UsersPage() {
     );
   }, [users, search]);
 
+  // Define as colunas com base no tipo real
+  // dos usuários retornados pelo contexto.
+  type User = (typeof users)[number];
+
+  const columns = useMemo<TableColumn<User>[]>(
+    () => [
+      {
+        key: "name",
+        header: "Nome",
+        render: (user) => <Link to={String(user.id)}>{user.name}</Link>,
+      },
+      {
+        key: "email",
+        header: "E-mail",
+        render: (user) => user.email,
+      },
+    ],
+    [],
+  );
+
   return (
     <section>
       <h2>Gerenciamento de Usuários</h2>
 
       <p>Consulte os usuários cadastrados no portal.</p>
 
-      <Link to="novo">Cadastrar usuário</Link>
+      <p>
+        <Link to="novo">Cadastrar usuário</Link>
+      </p>
 
-      <div>
-        <label htmlFor="search-users">Buscar usuários</label>
-
-        <input
+      <div style={{ marginBottom: "16px" }}>
+        <Input
           id="search-users"
+          label="Buscar usuários"
           type="search"
           placeholder="Digite um nome ou e-mail"
           value={search}
@@ -53,15 +73,12 @@ export default function UsersPage() {
         />
       </div>
 
-      <ul>
-        {filteredUsers.map((user) => (
-          <li key={user.id}>
-            <Link to={String(user.id)}>{user.name}</Link>
-            {" — "}
-            {user.email}
-          </li>
-        ))}
-      </ul>
+      <Table
+        columns={columns}
+        data={filteredUsers}
+        getRowKey={(user) => user.id}
+        emptyMessage="Nenhum usuário encontrado."
+      />
     </section>
   );
 }
