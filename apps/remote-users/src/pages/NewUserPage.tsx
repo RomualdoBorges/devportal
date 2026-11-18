@@ -2,6 +2,7 @@ import { useState, type SubmitEvent } from "react";
 import { Link } from "react-router-dom";
 import { useUsers } from "../contexts/UsersContext";
 import { useNavigate } from "react-router-dom";
+import { Button, Input } from "@devportal/ui";
 
 /**
  * Formulário de cadastro simulado.
@@ -44,29 +45,27 @@ export default function NewUserPage() {
       <h2>Cadastrar usuário</h2>
 
       <form onSubmit={handleSubmit}>
-        <div>
-          <label htmlFor="name">Nome</label>
-          <input
-            id="name"
-            type="text"
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-          />
-        </div>
+        <Input
+          id="name"
+          label="Nome"
+          type="text"
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          required
+        />
 
-        <div>
-          <label htmlFor="email">E-mail</label>
-          <input
-            id="email"
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
-        </div>
+        <Input
+          id="email"
+          label="E-mail"
+          type="email"
+          value={email}
+          onChange={(event) => setEmail(event.target.value)}
+          required
+        />
 
-        <button type="submit">Cadastrar</button>
+        <Button type="submit" variant="primary" size="md">
+          Cadastrar
+        </Button>
       </form>
 
       <p>

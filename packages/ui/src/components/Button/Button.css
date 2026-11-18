@@ -1,0 +1,66 @@
+.devportal-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  font-family: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background-color 0.2s,
+    opacity 0.2s;
+}
+
+.devportal-button--primary {
+  background-color: #2563eb;
+  color: #ffffff;
+}
+
+.devportal-button--primary:hover:not(:disabled) {
+  background-color: #1d4ed8;
+}
+
+.devportal-button--secondary {
+  background-color: #e2e8f0;
+  color: #1e293b;
+}
+
+.devportal-button--secondary:hover:not(:disabled) {
+  background-color: #cbd5e1;
+}
+
+.devportal-button--danger {
+  background-color: #dc2626;
+  color: #ffffff;
+}
+
+.devportal-button--danger:hover:not(:disabled) {
+  background-color: #b91c1c;
+}
+
+.devportal-button--sm {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.devportal-button--md {
+  padding: 10px 16px;
+  font-size: 14px;
+}
+
+.devportal-button--lg {
+  padding: 12px 20px;
+  font-size: 16px;
+}
+
+.devportal-button:focus-visible {
+  outline: 3px solid #93c5fd;
+  outline-offset: 2px;
+}
+
+.devportal-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
