@@ -3,16 +3,18 @@ import { Badge, Button, Card } from "@devportal/ui";
 import { Link, Route, Routes, useNavigate } from "react-router-dom";
 
 /**
- * Carrega dinamicamente o conjunto de rotas
- * pertencente ao microfrontend de Usuários.
+ * Carrega os microfrontends somente quando
+ * suas respectivas rotas são acessadas.
  */
 const UsersRoutes = lazy(() => import("remote_users/UsersRoutes"));
+
+const DashboardRoutes = lazy(() => import("remote_dashboard/DashboardRoutes"));
 
 /**
  * Página inicial pertencente ao Host.
  *
- * Demonstra a reutilização dos componentes
- * compartilhados entre microfrontends.
+ * Demonstra a reutilização de componentes
+ * compartilhados entre os microfrontends.
  */
 function HomePage() {
   const navigate = useNavigate();
@@ -26,17 +28,32 @@ function HomePage() {
           <Badge variant="success">Portal disponível</Badge>
         </div>
 
-        <Button
-          variant="primary"
-          size="md"
-          onClick={() => navigate("/usuarios")}>
-          Acessar usuários
-        </Button>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap" }}>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate("/usuarios")}>
+            Acessar usuários
+          </Button>
+
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => navigate("/dashboard")}>
+            Acessar Dashboard
+          </Button>
+        </div>
       </Card>
     </section>
   );
 }
 
+/**
+ * Aplicação principal do DevPortal.
+ *
+ * O Host controla a navegação e carrega os
+ * microfrontends através do Module Federation.
+ */
 export default function App() {
   return (
     <main style={{ padding: "32px", fontFamily: "Arial" }}>
@@ -44,26 +61,27 @@ export default function App() {
         <h1>DevPortal</h1>
         <p>Portal corporativo — FIAP Pós-Tech</p>
 
-        {/*
-          Link permite navegação sem recarregar
-          toda a aplicação no navegador.
-        */}
+        {/* Navegação sem recarregar a aplicação. */}
         <nav style={{ display: "flex", gap: "16px" }}>
           <Link to="/">Início</Link>
           <Link to="/usuarios">Usuários</Link>
+          <Link to="/dashboard">Dashboard</Link>
         </nav>
       </header>
 
       <hr />
 
       {/*
-        Suspense apresenta um fallback enquanto
-        o módulo remoto está sendo carregado.
+        Suspense apresenta uma mensagem enquanto
+        o microfrontend solicitado é carregado.
       */}
       <Suspense fallback={<p>Carregando microfrontend...</p>}>
         <Routes>
           <Route path="/" element={<HomePage />} />
+
           <Route path="/usuarios/*" element={<UsersRoutes />} />
+
+          <Route path="/dashboard/*" element={<DashboardRoutes />} />
         </Routes>
       </Suspense>
     </main>

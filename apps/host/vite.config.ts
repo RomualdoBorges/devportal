@@ -16,16 +16,24 @@ export default defineConfig({
       name: "devportal_host",
 
       /**
-       * Registro dos microfrontends remotos.
+       * Registro dos microfrontends independentes.
        *
-       * O endereço aponta para o remoteEntry.js,
-       * disponibilizado pelo Remote de Usuários.
+       * Cada Remote possui sua própria porta e
+       * disponibiliza um arquivo remoteEntry.js.
        */
       remotes: {
+        // Microfrontend de gerenciamento de usuários.
         remote_users: {
           type: "module",
           name: "remote_users",
           entry: "http://localhost:3001/remoteEntry.js",
+        },
+
+        // Microfrontend de indicadores e métricas.
+        remote_dashboard: {
+          type: "module",
+          name: "remote_dashboard",
+          entry: "http://localhost:3002/remoteEntry.js",
         },
       },
 

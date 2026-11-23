@@ -11,3 +11,17 @@ declare module "remote_users/UsersRoutes" {
 
   export default UsersRoutes;
 }
+
+/**
+ * Declara o módulo remoto de Dashboard.
+ *
+ * O componente será carregado dinamicamente
+ * pelo Host através do Module Federation.
+ */
+declare module "remote_dashboard/DashboardRoutes" {
+  import type { ComponentType } from "react";
+
+  const DashboardRoutes: ComponentType;
+
+  export default DashboardRoutes;
+}
